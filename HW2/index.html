@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>資工選課表 - 完整連結版</title>
+    <style>
+        /* 1. 表格基礎樣式 */
+        table {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+        th {
+            background-color: #04AA6D;
+            color: white;
+            text-align: left;
+        }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #ddd; }
+
+        /* 2. 課程連結樣式 */
+        .course-link {
+            color: #0000EE;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* 3. Popover (彈出視窗) 樣式 */
+        #popover-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            height: 85%;
+            background-color: white;
+            border: 2px solid #04AA6D;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            z-index: 1001;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .close-btn {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 8px 20px;
+            cursor: pointer;
+            float: right;
+            border: none;
+            font-weight: bold;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100% - 40px);
+            border: none;
+        }
+
+        button#change-btn {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>資工選課表</h2>
+
+    <table id="csie">
+        <thead>
+            <tr>
+                <th>開課單位</th>
+                <th>課程名稱</th>
+                <th>授課教師</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A2337')">
+                        物件導向軟體設計
+                    </span>
+                </td>
+                <td>黃崇源</td>
+            </tr>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A3044')">
+                        計算機網路
+                    </span>
+                </td>
+                <td>李春良</td>
+            </tr>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A2338')">
+                        作業系統實務
+                    </span>
+                </td>
+                <td>張哲維</td>
+            </tr>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A2342')">
+                        人工智慧
+                    </span>
+                </td>
+                <td>魏志達</td>
+            </tr>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A2339')">
+                        通訊系統
+                    </span>
+                </td>
+                <td>陳仁暉</td>
+            </tr>
+            <tr>
+                <td>資工系</td>
+                <td>
+                    <span class="course-link" onclick="openLink('https://catalog.cgu.edu.tw/coursedata?sectionid=A2340')">
+                        軟硬體專題(2)
+                    </span>
+                </td>
+                <td>黃崇源</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button id="change-btn" onclick="changeResult()">Change</button>
+
+    <div id="overlay" onclick="closeLink()"></div>
+    <div id="popover-container">
+        <button class="close-btn" onclick="closeLink()">關閉 X</button>
+        <iframe id="course-iframe" src=""></iframe>
+    </div>
+
+    <script>
+        function changeResult() {
+            var myTable = document.getElementById("csie");
+            var targetCell = myTable.rows[1].cells[2];
+            
+            if (targetCell.innerHTML === "黃崇源") {
+                targetCell.innerHTML = "李春良";
+            } else {
+                targetCell.innerHTML = "黃崇源";
+            }
+        }
+
+        function openLink(url) {
+            document.getElementById('course-iframe').src = url;
+            document.getElementById('popover-container').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeLink() {
+            document.getElementById('popover-container').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('course-iframe').src = "";
+        }
+    </script>
+
+</body>
+</html>
