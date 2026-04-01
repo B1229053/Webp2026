@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>ex4 - JavaScript Console Tree</title>
+</head>
+<body>
+    <h1>請開啟 Console 查看聖誕樹 (F12)</h1>
+
+    <script>
+        // 1. 重複字元的工具函式
+        function repeatchar(n, arg_char) {
+            let res = '';
+            for (let i = 0; i < n; i++) {
+                res += arg_char;
+            }
+            return res;
+        }
+
+        // 2. 畫樹的上半部 (三角形)
+        function printTreeTop(n) {
+            for (let i = 1; i <= n; i++) {
+                // 空格數量：總高度 - 目前行數
+                let spaces = repeatchar(n - i, ' ');
+                // 星號數量：(目前行數 * 2) - 1
+                let stars = repeatchar(2 * i - 1, '*');
+                console.log(spaces + stars);
+            }
+        }
+
+        // 3. 畫樹的下半部 (樹幹)
+        function printTreeBottom(n) {
+            // 樹幹通常固定為 3 行，星號置中
+            for (let i = 0; i < 3; i++) {
+                let trunkSpaces = repeatchar(n - 1, ' ');
+                console.log(trunkSpaces + '*');
+            }
+        }
+
+        // 4. 主函式：組合整顆樹
+        function tree(n) {
+            printTreeTop(n);
+            printTreeBottom(n);
+        }
+
+        // 執行：畫出一顆高度為 5 的樹 (你可以改成其他數字)
+        tree(5);
+
+    </script>
+</body>
+</html>
