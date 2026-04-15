@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>HW#4: Ajax 分頁與搜尋</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .controls { margin: 20px 0; display: flex; align-items: center; gap: 10px; }
+    </style>
+</head>
+<body class="container mt-5">
+    <h1>景點觀光展覽資訊</h1>
+
+    <div class="controls">
+        <label for="search">名稱搜尋：</label>
+        <input type="text" id="searchInput" class="form-control w-25" onchange="searchData()">
+    </div>
+
+    <table id="csie" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>名稱</th>
+                <th>地點</th>
+            </tr>
+        </thead>
+        <tbody id="dataBody">
+            </tbody>
+    </table>
+
+    <div class="controls">
+        <button class="btn btn-secondary" onclick="prevPage()">上一頁</button>
+        <span id="pageInfo">目前第 1 頁 / 總共 1 頁</span>
+        <button class="btn btn-secondary" onclick="nextPage()">下一頁</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
