@@ -11,12 +11,20 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-export const isFirebaseConfigured = Boolean(
-  firebaseConfig.apiKey &&
-    firebaseConfig.authDomain &&
-    firebaseConfig.projectId &&
-    firebaseConfig.appId,
-);
+export const firebaseEnvKeys = [
+  ["VITE_FIREBASE_API_KEY", firebaseConfig.apiKey],
+  ["VITE_FIREBASE_AUTH_DOMAIN", firebaseConfig.authDomain],
+  ["VITE_FIREBASE_PROJECT_ID", firebaseConfig.projectId],
+  ["VITE_FIREBASE_STORAGE_BUCKET", firebaseConfig.storageBucket],
+  ["VITE_FIREBASE_MESSAGING_SENDER_ID", firebaseConfig.messagingSenderId],
+  ["VITE_FIREBASE_APP_ID", firebaseConfig.appId],
+];
+
+export const missingFirebaseEnvKeys = firebaseEnvKeys
+  .filter(([, value]) => !value || String(value).startsWith("your-"))
+  .map(([key]) => key);
+
+export const isFirebaseConfigured = missingFirebaseEnvKeys.length === 0;
 
 export const app = isFirebaseConfigured ? initializeApp(firebaseConfig) : null;
 export const auth = app ? getAuth(app) : null;

@@ -10,7 +10,7 @@
 
 「步步為盈 StepProfit」是一個結合個人記帳、儲蓄目標、朋友監督與留言牆的網頁記帳系統。使用者可以在手機或電腦即時記錄收入與支出，設定想達成的目標物，例如新筆電、旅遊基金或生活預備金，並透過朋友圈功能讓朋友互相提醒與鼓勵。
 
-本專題預計使用 React 建立前端介面，並使用 Firebase 作為後端服務，包含會員登入、雲端資料儲存與即時留言更新。
+本專題使用 React 建立前端介面，並使用 Firebase 作為後端服務，包含會員登入、雲端資料儲存與即時留言更新。若尚未填入 Firebase 環境變數，系統會自動切換為 Demo 本機模式，方便開發與展示。
 
 ## 主要功能
 
@@ -82,7 +82,7 @@
 - 快速記帳介面
 - 可部署後由手機瀏覽器直接使用
 
-## 預計使用技術
+## 使用技術
 
 - React
 - React Router
@@ -91,6 +91,115 @@
 - Firebase Hosting 或 Vercel
 - CSS RWD 響應式設計
 - CSV 匯出
+
+## React 架構說明
+
+本專題是 React + Vite 架構，不是單純 HTML/CSS/JavaScript 頁面。
+
+### 入口檔案
+
+- `index.html` 載入 `/src/main.jsx`
+- `src/main.jsx` 使用 `createRoot` 將 `<App />` 掛載到 `#root`
+- `src/App.jsx` 負責設定 Provider 與 React Router 路由
+
+### 路由設計
+
+使用 `react-router-dom` 建立單頁應用程式：
+
+- `/`：總覽
+- `/transactions`：記帳紀錄
+- `/analytics`：統計分析
+- `/goals`：儲蓄目標
+- `/circle`：朋友圈與留言牆
+- `/settings`：個人設定
+
+### Component 拆分
+
+本專題將畫面拆成可重複使用的 React component：
+
+- `Layout.jsx`：側邊欄、主版面、同步狀態
+- `PageHeader.jsx`：每頁標題區
+- `StatCard.jsx`：收入、支出、結餘卡片
+- `CalendarPanel.jsx`：本月收支月曆
+- `pages/*.jsx`：各功能頁面
+
+### State 與資料流
+
+使用 React Hooks 與 Context 管理狀態：
+
+- `AuthContext.jsx`：管理 Firebase 登入、註冊、登出與登入狀態
+- `AppDataContext.jsx`：集中管理記帳、目標、留言、個人設定
+- `useState`：管理表單輸入、圖表切換、編輯狀態
+- `useMemo`：計算統計數字、分類比例、月份曲線資料
+- `useEffect`：監聽 Firebase Auth 與 Firestore 即時資料
+
+### Firebase 資料流
+
+畫面不直接操作 Firebase，而是呼叫 Context 提供的方法：
+
+```txt
+使用者操作畫面
+  -> 呼叫 AppDataContext 方法
+  -> 判斷 Firebase 是否可用
+  -> Firebase 模式：寫入 Firestore
+  -> Demo 模式：寫入 localStorage
+  -> React state 更新畫面
+```
+
+## Firebase 設定方式
+
+1. 到 Firebase Console 建立專案
+2. 啟用 Authentication 的 Email/Password 登入
+3. 建立 Firestore Database
+4. 複製 `.env.example` 為 `.env.local`
+5. 將 Firebase Web App 設定填入 `.env.local`
+6. 重新啟動 `npm run dev`
+
+```env
+VITE_FIREBASE_API_KEY=your-api-key
+VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
+VITE_FIREBASE_APP_ID=your-app-id
+```
+
+系統會依照 Firebase 是否設定完成切換資料模式：
+
+- Firebase 已設定且已登入：使用 Firebase Authentication 與 Firestore
+- Firebase 未設定：使用 localStorage Demo 模式
+
+### Firebase 在本專題中的實作位置
+
+- `src/firebase/config.js`：讀取 Vite 環境變數，判斷 Firebase 是否設定完成
+- `src/context/AuthContext.jsx`：處理註冊、登入、登出，註冊後建立 `users/{uid}`
+- `src/context/AppDataContext.jsx`：集中處理 Firestore 讀寫與 localStorage Demo fallback
+- `firestore.rules`：限制使用者只能管理自己的交易、目標與個人資料
+- `src/pages/Settings.jsx`：顯示 Firebase 連線狀態與缺少的 env key
+
+### Firestore 實際使用的 collections
+
+- `users/{uid}`：個人名稱、每月預算、聯絡方式、頭像設定
+- `transactions`：收入與支出紀錄，使用 `userId` 對應登入者
+- `goals`：儲蓄目標與存款紀錄，使用 `userId` 對應登入者
+- `comments`：朋友圈留言牆，使用 `authorId` 紀錄留言者
+
+### Firestore Rules 部署
+
+將 `firestore.rules` 的內容貼到 Firebase Console：
+
+```txt
+Firestore Database
+  -> Rules
+  -> 貼上 firestore.rules
+  -> Publish
+```
+
+或使用 Firebase CLI：
+
+```bash
+firebase deploy --only firestore:rules
+```
 
 ## 資料庫規劃
 

@@ -1,36 +1,51 @@
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout";
+import { AppDataProvider } from "./context/AppDataContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Analytics from "./pages/Analytics";
+import AuthPage from "./pages/AuthPage";
+import Circle from "./pages/Circle";
+import Dashboard from "./pages/Dashboard";
+import Goals from "./pages/Goals";
+import Monthly from "./pages/Monthly";
+import Settings from "./pages/Settings";
+import Transactions from "./pages/Transactions";
+
+function AppRoutes() {
+  const { isFirebaseConfigured, loading, user } = useAuth();
+
+  if (loading) {
+    return <main className="auth-page"><section className="auth-card"><h1>載入中</h1></section></main>;
+  }
+
+  if (isFirebaseConfigured && !user) {
+    return <AuthPage />;
+  }
+
+  return (
+    <AppDataProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/transactions" element={<Transactions />} />
+            <Route path="/monthly" element={<Monthly />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/circle" element={<Circle />} />
+            <Route path="/wall" element={<Navigate to="/circle" replace />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AppDataProvider>
+  );
+}
+
 export default function App() {
   return (
-    <main className="app-shell">
-      <section className="hero">
-        <p className="eyebrow">網頁程式期末專題</p>
-        <h1>步步為盈 StepProfit</h1>
-        <p className="subtitle">
-          結合個人記帳、儲蓄目標、朋友圈監督與留言牆的即時記帳系統。
-        </p>
-        <div className="meta">
-          <span>顏羽婕</span>
-          <span>B1229053</span>
-        </div>
-      </section>
-
-      <section className="feature-grid" aria-label="功能規劃">
-        <article>
-          <strong>即時記帳</strong>
-          <p>記錄收入、支出、分類、日期與備註，並同步到 Firebase。</p>
-        </article>
-        <article>
-          <strong>儲蓄目標</strong>
-          <p>設定目標物與目標金額，追蹤完成百分比與剩餘金額。</p>
-        </article>
-        <article>
-          <strong>朋友圈監督</strong>
-          <p>邀請朋友加入圈子，只分享月支出摘要與預算使用比例。</p>
-        </article>
-        <article>
-          <strong>留言牆</strong>
-          <p>朋友可以互相留言提醒、鼓勵，並使用 Firestore 即時更新。</p>
-        </article>
-      </section>
-    </main>
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
