@@ -1,8 +1,7 @@
-import { MailPlus, MessageCircle, Send, Trash2, UserPlus } from "lucide-react";
+import { Copy, MailPlus, MessageCircle, Send, Trash2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import PageHeader from "../components/PageHeader";
 import { useAppData } from "../context/AppDataContext";
-import { circleMembers } from "../data/mockData";
 
 const currency = (value) => `NT$ ${Number(value).toLocaleString()}`;
 
@@ -27,6 +26,8 @@ const getFriendSpending = (contact, index) => {
   return 1800 + (seed % 4200);
 };
 
+const makeInviteCode = () => `SP-${crypto.randomUUID().slice(0, 6).toUpperCase()}`;
+
 export default function Circle() {
   const { addComment, comments, profile, summary, updateProfile } = useAppData();
   const [commentForm, setCommentForm] = useState(emptyComment);
@@ -47,9 +48,6 @@ export default function Circle() {
       budget: summary.budget,
       avatar: profile.avatar,
     },
-    ...circleMembers
-      .filter((member) => member.id !== "me")
-      .map((member) => ({ ...member, avatar: "" })),
     ...invitedFriends.map((friend, index) => ({
       id: friend.id,
       name: friend.name,
@@ -60,6 +58,9 @@ export default function Circle() {
       invited: true,
     })),
   ];
+  const memberNames = new Set(members.map((member) => member.name));
+  const commentTarget = memberNames.has(commentForm.target) ? commentForm.target : members[0].name;
+  const visibleComments = comments.filter((comment) => memberNames.has(comment.author) && memberNames.has(comment.target));
 
   const ranking = members
     .map((member) => {
@@ -80,7 +81,7 @@ export default function Circle() {
       return;
     }
 
-    addComment(commentForm);
+    addComment({ ...commentForm, target: commentTarget });
     setCommentForm(emptyComment);
   };
 
@@ -114,16 +115,28 @@ export default function Circle() {
       contact,
       budget: friendBudget,
       spending: getFriendSpending(contact, invitedFriends.length),
+      inviteCode: makeInviteCode(),
       invitedAt: new Date().toISOString(),
     };
 
     updateProfile({ friends: [...invitedFriends, nextFriend] });
     setInviteForm(emptyInvite);
-    setInviteMessage(`已邀請 ${name} 加入朋友圈`);
+    setInviteMessage(`已建立 ${name} 的邀請資料，可以複製邀請碼傳給對方`);
   };
 
   const removeFriend = (friendId) => {
     updateProfile({ friends: invitedFriends.filter((friend) => friend.id !== friendId) });
+  };
+
+  const copyInvite = async (friend) => {
+    const inviteText = `我邀請你加入「步步為盈 StepProfit」朋友圈，邀請碼：${friend.inviteCode || "尚未建立"}。目前期末 Demo 版請先註冊帳號後告訴我，我會把你加入排名與留言牆。`;
+
+    try {
+      await navigator.clipboard.writeText(inviteText);
+      setInviteMessage(`已複製 ${friend.name} 的邀請文字`);
+    } catch {
+      setInviteMessage(`${friend.name} 的邀請碼：${friend.inviteCode || "尚未建立"}`);
+    }
   };
 
   return (
@@ -183,7 +196,11 @@ export default function Circle() {
                   <div>
                     <strong>{friend.name}</strong>
                     <span>{friend.contact}</span>
+                    <small className="invite-code">邀請碼 {friend.inviteCode || "未建立"}</small>
                   </div>
+                  <button type="button" aria-label={`複製 ${friend.name} 邀請碼`} onClick={() => copyInvite(friend)}>
+                    <Copy size={16} />
+                  </button>
                   <button type="button" aria-label={`移除 ${friend.name}`} onClick={() => removeFriend(friend.id)}>
                     <Trash2 size={16} />
                   </button>
@@ -230,8 +247,7 @@ export default function Circle() {
 
           <label>
               留給誰
-            <select value={commentForm.target} onChange={(event) => updateComment("target", event.target.value)}>
-              {!members.some((member) => member.name === commentForm.target) && <option>{commentForm.target}</option>}
+            <select value={commentTarget} onChange={(event) => updateComment("target", event.target.value)}>
               {members.map((member) => (
                 <option key={member.id}>{member.name}</option>
               ))}
@@ -266,19 +282,25 @@ export default function Circle() {
         </form>
 
         <section className="comment-stack">
-          {comments.map((comment) => (
-            <article className="paper-panel comment-note" key={comment.id}>
-              <div className="comment-note-head">
-                <span className={`comment-type type-${comment.type}`}>{comment.type}</span>
-                <h3>
-                  <MessageCircle size={18} />
-                  {comment.author} 給 {comment.target}
-                </h3>
-              </div>
-              <p>{comment.content}</p>
-              <small>{comment.time}</small>
+          {visibleComments.length === 0 ? (
+            <article className="paper-panel comment-note">
+              <p className="empty-note">目前還沒有朋友圈留言，先邀請朋友或寫一則提醒給自己。</p>
             </article>
-          ))}
+          ) : (
+            visibleComments.map((comment) => (
+              <article className="paper-panel comment-note" key={comment.id}>
+                <div className="comment-note-head">
+                  <span className={`comment-type type-${comment.type}`}>{comment.type}</span>
+                  <h3>
+                    <MessageCircle size={18} />
+                    {comment.author} 給 {comment.target}
+                  </h3>
+                </div>
+                <p>{comment.content}</p>
+                <small>{comment.time}</small>
+              </article>
+            ))
+          )}
         </section>
       </section>
     </main>

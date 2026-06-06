@@ -4,10 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
 import { useAppData } from "../context/AppDataContext";
-import { circleMembers } from "../data/mockData";
 
 const currency = (value) => `NT$ ${Number(value).toLocaleString()}`;
 const today = () => new Date().toISOString().slice(0, 10);
+const friendBudget = 8000;
+
+const getFriendSpending = (contact, index) => {
+  const text = `${contact}-${index}`;
+  const seed = [...text].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return 1800 + (seed % 4200);
+};
 
 export default function Dashboard() {
   const { addGoalDeposit, addTransaction, goals, profile, summary, transactions, updateProfile } = useAppData();
@@ -25,6 +31,7 @@ export default function Dashboard() {
   const focusGoalProgress = focusGoal
     ? Math.min(Math.round((Number(focusGoal.currentAmount || 0) / Number(focusGoal.targetAmount || 1)) * 100), 100)
     : 0;
+  const invitedFriends = Array.isArray(profile.friends) ? profile.friends : [];
 
   const updateBudget = (value) => {
     setBudgetInput(value);
@@ -258,16 +265,23 @@ export default function Dashboard() {
           <Link to="/circle">前往朋友圈</Link>
         </div>
         <div className="member-list">
-          {circleMembers.map((member) => {
-            const rate = Math.round((member.spending / member.budget) * 100);
-            return (
-              <div className="member-row" key={member.id}>
-                <span>{member.name}</span>
-                <strong>{currency(member.spending)}</strong>
-                <small>預算 {rate}%</small>
-              </div>
-            );
-          })}
+          {invitedFriends.length === 0 ? (
+            <p className="empty-note">還沒有邀請朋友，加入後會出現在這裡。</p>
+          ) : (
+            invitedFriends.map((member, index) => {
+              const spending = member.spending ?? getFriendSpending(member.contact, index);
+              const budget = member.budget ?? friendBudget;
+              const rate = Math.round((spending / budget) * 100);
+
+              return (
+                <div className="member-row" key={member.id}>
+                  <span>{member.name}</span>
+                  <strong>{currency(spending)}</strong>
+                  <small>預算 {rate}%</small>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
     </main>

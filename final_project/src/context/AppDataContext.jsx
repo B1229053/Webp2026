@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "../firebase/config";
 import { useAuth } from "./AuthContext";
-import { comments as initialComments, goals as initialGoals, transactions as initialTransactions } from "../data/mockData";
+import { goals as initialGoals, transactions as initialTransactions } from "../data/mockData";
 
 const AppDataContext = createContext(null);
 const STORAGE_KEY = "stepProfitTransactions";
@@ -96,9 +96,9 @@ const loadProfile = () => {
 const loadComments = () => {
   try {
     const saved = localStorage.getItem(COMMENTS_KEY);
-    return saved ? JSON.parse(saved) : initialComments;
+    return saved ? JSON.parse(saved) : [];
   } catch {
-    return initialComments;
+    return [];
   }
 };
 

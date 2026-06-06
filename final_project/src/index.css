@@ -1565,7 +1565,7 @@ h1 {
 
 .friend-chip {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 10px;
   padding: 12px;
@@ -1584,6 +1584,19 @@ h1 {
   overflow-wrap: anywhere;
   font-size: 13px;
   font-weight: 900;
+}
+
+.friend-chip .invite-code {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 6px;
+  padding: 4px 8px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: #fff6d8;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 1000;
 }
 
 .friend-chip button {
