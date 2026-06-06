@@ -33,6 +33,8 @@ const getGoalDeposits = (goals) =>
     })),
   );
 
+const savingsCategory = "儲蓄目標";
+
 const buildMonthlySeries = (transactions, goals) => {
   const latestMonth = currentMonthKey();
   const deposits = getGoalDeposits(goals);
@@ -48,6 +50,11 @@ const buildMonthlySeries = (transactions, goals) => {
 
   transactions.forEach((item) => {
     const month = item.date.slice(0, 7);
+
+    if (item.type === "expense" && item.category === savingsCategory) {
+      return;
+    }
+
     totals[month][item.type] += Number(item.amount || 0);
   });
 
@@ -66,7 +73,7 @@ const buildMonthlySeries = (transactions, goals) => {
 };
 
 const buildExpenseCategories = (transactions) => {
-  const expenses = transactions.filter((item) => item.type === "expense");
+  const expenses = transactions.filter((item) => item.type === "expense" && item.category !== savingsCategory);
   const totalExpense = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const groups = expenses.reduce((result, item) => {
     result[item.category] = (result[item.category] || 0) + Number(item.amount || 0);
@@ -87,11 +94,11 @@ const linePath = (points) => points.map((point) => `${point.x},${point.y}`).join
 
 function MonthlyLineChart({ data }) {
   const [activeMetric, setActiveMetric] = useState(null);
-  const maxValue = Math.max(100, ...data.flatMap((item) => [item.income, item.expense, Math.abs(item.balance)]));
+  const maxValue = Math.max(100, ...data.flatMap((item) => [item.income, item.expense, Math.max(item.balance, 0)]));
   const chartInnerWidth = chartWidth - chartPadding.left - chartPadding.right;
   const chartInnerHeight = chartHeight - chartPadding.top - chartPadding.bottom;
   const xStep = data.length > 1 ? chartInnerWidth / (data.length - 1) : chartInnerWidth;
-  const yScale = (value) => chartPadding.top + chartInnerHeight - ((value + maxValue) / (maxValue * 2)) * chartInnerHeight;
+  const yScale = (value) => chartPadding.top + chartInnerHeight - (Math.max(value, 0) / maxValue) * chartInnerHeight;
 
   const incomePoints = data.map((item, index) => ({
     x: chartPadding.left + index * xStep,
@@ -105,7 +112,7 @@ function MonthlyLineChart({ data }) {
     x: chartPadding.left + index * xStep,
     y: yScale(item.balance),
   }));
-  const guideValues = [maxValue, Math.round(maxValue / 2), 0, -Math.round(maxValue / 2), -maxValue];
+  const guideValues = [maxValue, Math.round(maxValue * 0.75), Math.round(maxValue / 2), Math.round(maxValue * 0.25), 0];
   const metricClass = (metric) => (activeMetric && activeMetric !== metric ? " muted" : "");
   const toggleMetric = (metric) => {
     setActiveMetric((current) => (current === metric ? null : metric));
@@ -289,7 +296,7 @@ export default function Analytics() {
           <p>{bestBalanceMonth ? currency(bestBalanceMonth.balance) : "先建立月資料"}</p>
         </article>
         <article className="paper-panel analysis-card">
-          <span>最大支出分類</span>
+          <span>最大生活支出分類</span>
           <strong>{topCategory?.name || "尚無資料"}</strong>
           <p>{topCategory ? `${currency(topCategory.amount)}，占 ${topCategory.percent}%` : "新增支出後會自動分析"}</p>
         </article>
@@ -297,7 +304,7 @@ export default function Analytics() {
 
       <section className="paper-panel">
         <div className="panel-heading">
-          <h3>累計支出分類比例</h3>
+          <h3>累計生活支出分類比例</h3>
           <span className="count-pill">{allCategories.length} 類</span>
         </div>
 
