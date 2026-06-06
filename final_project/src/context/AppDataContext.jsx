@@ -67,11 +67,38 @@ const loadTransactions = () => {
   }
 };
 
-const normalizeGoals = (items) =>
-  items.map((goal) => ({
+const legacyGoalText = {
+  12000: {
+    title: "畢旅基金",
+    note: "每週少買兩杯飲料",
+  },
+  20000: {
+    title: "緊急預備金",
+    note: "先存一筆臨時要用的安全感",
+  },
+  50000: {
+    title: "新筆電",
+    note: "希望專題展示前先存到一半",
+  },
+};
+
+const isBrokenText = (value) => typeof value === "string" && /^[?\s]+$/.test(value.trim());
+
+const normalizeGoalText = (goal) => {
+  const fallback = legacyGoalText[Number(goal.targetAmount)] || {};
+
+  return {
     ...goal,
-    deposits: goal.deposits || [],
-  }));
+    title: isBrokenText(goal.title) ? fallback.title || "儲蓄目標" : goal.title,
+    note: isBrokenText(goal.note) ? fallback.note || "尚未填寫備註" : goal.note,
+    deposits: (goal.deposits || []).map((deposit) => ({
+      ...deposit,
+      note: isBrokenText(deposit.note) ? "分配到儲蓄目標" : deposit.note,
+    })),
+  };
+};
+
+const normalizeGoals = (items) => items.map(normalizeGoalText);
 
 const loadGoals = () => {
   try {
