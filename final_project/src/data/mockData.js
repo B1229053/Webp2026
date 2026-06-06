@@ -24,28 +24,3 @@ export const goals = [
     note: "每週少買兩杯飲料",
   },
 ];
-
-export const circleMembers = [
-  { id: "me", name: "我", spending: 3260, budget: 8000 },
-  { id: "amy", name: "Amy", spending: 5180, budget: 7000 },
-  { id: "kai", name: "Kai", spending: 2640, budget: 6500 },
-];
-
-export const comments = [
-  {
-    id: 1,
-    author: "Amy",
-    target: "我",
-    type: "鼓勵",
-    content: "這週飲料費有下降欸，繼續保持",
-    time: "今天 13:20",
-  },
-  {
-    id: 2,
-    author: "Kai",
-    target: "Amy",
-    type: "提醒",
-    content: "妳的外食快超過預算了，月底先忍一下",
-    time: "昨天 22:10",
-  },
-];

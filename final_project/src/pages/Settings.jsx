@@ -142,7 +142,7 @@ export default function Settings() {
           >
             重設頭像位置
           </button>
-          <p>頭像會用在朋友圈排名與留言牆，調整到自己喜歡的裁切位置就可以。</p>
+          <p>頭像會保存在個人設定裡，調整到自己喜歡的裁切位置就可以。</p>
         </article>
       </section>
     </main>

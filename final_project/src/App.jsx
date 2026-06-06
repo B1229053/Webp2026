@@ -4,7 +4,6 @@ import { AppDataProvider } from "./context/AppDataContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Analytics from "./pages/Analytics";
 import AuthPage from "./pages/AuthPage";
-import Circle from "./pages/Circle";
 import Dashboard from "./pages/Dashboard";
 import Goals from "./pages/Goals";
 import Monthly from "./pages/Monthly";
@@ -32,9 +31,8 @@ function AppRoutes() {
             <Route path="/monthly" element={<Monthly />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/goals" element={<Goals />} />
-            <Route path="/circle" element={<Circle />} />
-            <Route path="/wall" element={<Navigate to="/circle" replace />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>

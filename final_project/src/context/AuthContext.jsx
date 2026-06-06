@@ -59,7 +59,6 @@ export function AuthProvider({ children }) {
           avatarScale: 100,
           avatarX: 0,
           avatarY: 0,
-          friends: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });

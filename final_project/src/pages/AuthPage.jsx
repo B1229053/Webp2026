@@ -1,11 +1,11 @@
-import { ChartLine, Goal, LogIn, MessageCircle, ShieldCheck } from "lucide-react";
+import { CalendarDays, ChartLine, Goal, LogIn, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const featureCards = [
   { icon: ChartLine, title: "即時記帳", text: "收入、支出與月曆總覽會同步更新" },
   { icon: Goal, title: "儲蓄目標", text: "把想買的東西拆成可以追蹤的存款進度" },
-  { icon: MessageCircle, title: "朋友圈", text: "用排名與留言讓朋友互相提醒、鼓勵" },
+  { icon: CalendarDays, title: "月曆統計", text: "用月份、圖表與分類看懂自己的花費習慣" },
 ];
 
 export default function AuthPage() {
@@ -55,7 +55,7 @@ export default function AuthPage() {
 
           <div className="auth-proof">
             <ShieldCheck size={18} />
-            <span>登入後自動保存記帳、目標與朋友圈資料</span>
+            <span>登入後自動保存記帳、目標與個人設定</span>
           </div>
         </div>
 

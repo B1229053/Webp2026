@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { CalendarDays, ChartPie, CircleDollarSign, Goal, Home, LogOut, NotebookPen, Settings, User, Users } from "lucide-react";
+import { CalendarDays, ChartPie, CircleDollarSign, Goal, Home, LogOut, NotebookPen, Settings, User } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useAppData } from "../context/AppDataContext";
 
@@ -9,7 +9,6 @@ const navItems = [
   { to: "/monthly", label: "月曆", icon: CalendarDays },
   { to: "/analytics", label: "統計", icon: ChartPie },
   { to: "/goals", label: "目標", icon: Goal },
-  { to: "/circle", label: "朋友圈", icon: Users },
   { to: "/settings", label: "設定", icon: Settings },
 ];
 

@@ -18,7 +18,6 @@ const AppDataContext = createContext(null);
 const STORAGE_KEY = "stepProfitTransactions";
 const GOALS_KEY = "stepProfitGoals";
 const PROFILE_KEY = "stepProfitProfile";
-const COMMENTS_KEY = "stepProfitComments";
 
 const defaultProfile = {
   displayName: "我",
@@ -28,7 +27,6 @@ const defaultProfile = {
   avatarScale: 100,
   avatarX: 0,
   avatarY: 0,
-  friends: [],
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -93,21 +91,11 @@ const loadProfile = () => {
   }
 };
 
-const loadComments = () => {
-  try {
-    const saved = localStorage.getItem(COMMENTS_KEY);
-    return saved ? JSON.parse(saved) : [];
-  } catch {
-    return [];
-  }
-};
-
 export function AppDataProvider({ children }) {
   const { user } = useAuth();
   const [transactions, setTransactions] = useState(loadTransactions);
   const [goals, setGoals] = useState(loadGoals);
   const [profile, setProfile] = useState(loadProfile);
-  const [comments, setComments] = useState(loadComments);
   const [dataError, setDataError] = useState("");
   const useCloud = Boolean(isFirebaseConfigured && db && user);
 
@@ -143,21 +131,12 @@ export function AppDataProvider({ children }) {
   }, [profile, useCloud]);
 
   useEffect(() => {
-    if (useCloud) {
-      return;
-    }
-
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
-  }, [comments, useCloud]);
-
-  useEffect(() => {
     if (!useCloud) {
       return undefined;
     }
 
     const transactionsQuery = query(collection(db, "transactions"), where("userId", "==", user.uid));
     const goalsQuery = query(collection(db, "goals"), where("userId", "==", user.uid));
-    const commentsQuery = collection(db, "comments");
     const profileRef = doc(db, "users", user.uid);
 
     const unsubscribeTransactions = onSnapshot(
@@ -202,22 +181,10 @@ export function AppDataProvider({ children }) {
       () => setDataError("讀取個人資料失敗，請確認 users 規則"),
     );
 
-    const unsubscribeComments = onSnapshot(
-      commentsQuery,
-      (snapshot) => {
-        const nextComments = snapshot.docs
-          .map((commentDoc) => ({ ...commentDoc.data(), id: commentDoc.id }))
-          .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        setComments(nextComments);
-      },
-      () => setDataError("讀取朋友圈留言失敗，請確認 comments 規則"),
-    );
-
     return () => {
       unsubscribeTransactions();
       unsubscribeGoals();
       unsubscribeProfile();
-      unsubscribeComments();
     };
   }, [runCloudAction, useCloud, user]);
 
@@ -274,38 +241,6 @@ export function AppDataProvider({ children }) {
     }
 
     setProfile((current) => ({ ...current, ...patch }));
-  };
-
-  const addComment = (payload) => {
-    if (!payload.content.trim()) {
-      return false;
-    }
-
-    const nextComment = {
-      id: crypto.randomUUID(),
-      author: profile.displayName || "我",
-      target: payload.target,
-      type: payload.type,
-      content: payload.content.trim(),
-      time: "剛剛",
-      createdAt: Date.now(),
-    };
-
-    if (useCloud) {
-      runCloudAction(
-        () =>
-          addDoc(collection(db, "comments"), {
-            ...nextComment,
-            authorId: user.uid,
-            author: profile.displayName || user.email?.split("@")[0] || "我",
-          }),
-        "新增留言失敗，請確認 comments 規則",
-      );
-      return true;
-    }
-
-    setComments((items) => [nextComment, ...items]);
-    return true;
   };
 
   const addGoal = (payload) => {
@@ -540,7 +475,6 @@ export function AppDataProvider({ children }) {
   const value = useMemo(
     () => ({
       transactions,
-      comments,
       goals,
       profile,
       summary,
@@ -548,7 +482,6 @@ export function AppDataProvider({ children }) {
       addTransaction,
       removeTransaction,
       updateProfile,
-      addComment,
       addGoal,
       addGoalDeposit,
       updateGoalDeposit,
@@ -556,7 +489,7 @@ export function AppDataProvider({ children }) {
       removeGoal,
       useCloud,
     }),
-    [transactions, comments, goals, profile, summary, dataError, useCloud],
+    [transactions, goals, profile, summary, dataError, useCloud],
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
