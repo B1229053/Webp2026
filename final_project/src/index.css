@@ -460,6 +460,11 @@ h1 {
   align-items: start;
 }
 
+.goal-showcase-grid .paper-panel:nth-child(even),
+.goal-showcase-grid .paper-panel:nth-child(odd) {
+  transform: none;
+}
+
 .align-start {
   align-items: start;
 }
@@ -1686,12 +1691,16 @@ h1 {
 
 .tape {
   position: absolute;
-  right: 18px;
-  top: -13px;
-  padding: 6px 18px;
+  left: 22px;
+  top: 14px;
+  display: inline-flex;
+  width: fit-content;
+  min-width: 72px;
+  justify-content: center;
+  padding: 6px 14px;
   border: 2px solid rgba(39, 32, 24, 0.2);
   background: rgba(255, 216, 97, 0.8);
-  transform: rotate(5deg);
+  transform: rotate(-0.6deg);
   font-weight: 1000;
 }
 
@@ -1703,7 +1712,7 @@ h1 {
 }
 
 .goal-card h3 {
-  margin-bottom: 8px;
+  margin: 42px 0 8px;
   overflow-wrap: anywhere;
   font-size: clamp(34px, 3.2vw, 52px);
   line-height: 1.05;
@@ -1891,11 +1900,11 @@ h1 {
 @keyframes tape-wiggle {
   0%,
   100% {
-    transform: rotate(5deg);
+    transform: rotate(-0.6deg);
   }
 
   50% {
-    transform: rotate(-2deg) translateY(-2px);
+    transform: rotate(0.8deg) translateY(-1px);
   }
 }
 

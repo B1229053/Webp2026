@@ -120,9 +120,9 @@ const loadProfile = () => {
 
 export function AppDataProvider({ children }) {
   const { user } = useAuth();
-  const [transactions, setTransactions] = useState(loadTransactions);
-  const [goals, setGoals] = useState(loadGoals);
-  const [profile, setProfile] = useState(loadProfile);
+  const [transactions, setTransactions] = useState(() => (isFirebaseConfigured ? [] : loadTransactions()));
+  const [goals, setGoals] = useState(() => (isFirebaseConfigured ? [] : loadGoals()));
+  const [profile, setProfile] = useState(() => (isFirebaseConfigured ? defaultProfile : loadProfile()));
   const [dataError, setDataError] = useState("");
   const useCloud = Boolean(isFirebaseConfigured && db && user);
 
