@@ -53,12 +53,7 @@ export function AuthProvider({ children }) {
         await setDoc(doc(db, "users", credential.user.uid), {
           displayName,
           monthlyBudget: 8000,
-          contact: email,
           email,
-          avatar: "",
-          avatarScale: 100,
-          avatarX: 0,
-          avatarY: 0,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });

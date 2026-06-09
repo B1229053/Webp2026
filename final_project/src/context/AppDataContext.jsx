@@ -22,11 +22,6 @@ const PROFILE_KEY = "stepProfitProfile";
 const defaultProfile = {
   displayName: "我",
   monthlyBudget: 8000,
-  contact: "",
-  avatar: "",
-  avatarScale: 100,
-  avatarX: 0,
-  avatarY: 0,
 };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -195,7 +190,6 @@ export function AppDataProvider({ children }) {
           const nextProfile = {
             ...defaultProfile,
             displayName: user.displayName || user.email?.split("@")[0] || defaultProfile.displayName,
-            contact: user.email || "",
             email: user.email,
           };
           setProfile(nextProfile);

@@ -66,9 +66,7 @@
 
 ### 7. 個人設定
 
-- 修改使用者名稱、聯絡方式與每月預算
-- 上傳頭像
-- 調整頭像縮放與上下左右位置
+- 修改使用者名稱與每月預算
 - 顯示 Firebase 連線狀態
 
 ## 使用技術
@@ -146,7 +144,7 @@ VITE_FIREBASE_APP_ID=your-app-id
 
 ### Firestore 使用的 collections
 
-- `users/{uid}`：個人名稱、每月預算、聯絡方式、頭像設定
+- `users/{uid}`：個人名稱、Email 與每月預算
 - `transactions`：收入與支出紀錄，使用 `userId` 對應登入者
 - `goals`：儲蓄目標與存款紀錄，使用 `userId` 對應登入者
 
@@ -157,12 +155,7 @@ users
   uid
   displayName
   email
-  contact
   monthlyBudget
-  avatar
-  avatarScale
-  avatarX
-  avatarY
   createdAt
   updatedAt
 
